@@ -50,6 +50,10 @@ export default class Component {
 
   mounted() {}
 
+  getComponentTag(selector) {
+    return this.$target.querySelector(`[data-component="${selector}"]`);
+  }
+
   setState(newState) {
     this.$state = { ...this.$state, ...newState };
     this.render();

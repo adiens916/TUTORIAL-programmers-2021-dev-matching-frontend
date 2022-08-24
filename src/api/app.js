@@ -1,4 +1,4 @@
-import { get } from ".";
+import { get } from "./fetch.js";
 
 const host = "https://zl3m4qq0l9.execute-api.ap-northeast-2.amazonaws.com/dev";
 const imageHost =

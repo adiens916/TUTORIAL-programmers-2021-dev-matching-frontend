@@ -1,21 +1,27 @@
 import Component from "../core/Component.js";
-import { getImage, getNodes } from "../api/get.js";
+import { getImage, getNodes } from "../api/app.js";
+import nodeSample from "../api/getNodesSample.json" assert { type: "json" };
 
+/**
+ * @typedef { import('../types').Node } Node
+ */
 export default class Nodes extends Component {
   setup() {
-    const { nodeId } = this.$props;
-
-    getNodes(nodeId).then((data) => {
-      this.setState({ nodeList: data });
-      console.log(this.$state.nodeList);
-    });
+    /**
+     * @type {{ nodes: Node[] }}
+     */
+    this.$state = {
+      nodes: nodeSample,
+    };
+    // getNodes(nodeId).then((data) => {
+    //   this.setState({ nodeList: data });
+    //   console.log(this.$state.nodeList);
+    // });
   }
 
   template() {
-    if (!this.$state) {
-      return `<div></div>`;
-    } else {
-      const { nodeList } = this.$state;
+    if (this.$state.nodes) {
+      const nodes = this.$state.nodes;
 
       return `
         <div class="Nodes">
@@ -23,15 +29,11 @@ export default class Nodes extends Component {
             <img src="./assets/prev.png">
           </div>
 
-          ${nodeList
-            .map(({ id, name, type, filePath, parent }) =>
-              type === "DIRECTORY"
-                ? `<div class="Node">
-                  <img src="./assets/directory.png">
-                  <div>${name}</div>
-                </div>`
-                : `<div class="Node">
-                  <img src=${getImage(filePath)}>
+          ${nodes
+            .map(
+              ({ id, name, type, filePath, parent }) =>
+                `<div class="Node">
+                  <img src=${this.getNodeIcon(type)}>
                   <div>${name}</div>
                 </div>`
             )
@@ -41,5 +43,13 @@ export default class Nodes extends Component {
         </div>
       `;
     }
+  }
+
+  setEvent() {}
+
+  getNodeIcon(type) {
+    return type === "DIRECTORY"
+      ? "./assets/directory.png"
+      : "./assets/file.png";
   }
 }
