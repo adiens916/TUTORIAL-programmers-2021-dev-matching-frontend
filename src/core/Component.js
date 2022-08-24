@@ -3,6 +3,10 @@ export default class Component {
   $props;
   $state;
 
+  /**
+   * @param {Element} $target
+   * @param {Object} $props
+   */
   constructor($target, $props) {
     this.$target = $target;
     this.$props = $props;
@@ -13,17 +17,23 @@ export default class Component {
 
   setup() {}
 
+  template() {
+    return ``;
+  }
+
   setEvent() {}
 
+  /**
+   * @param {string} selector
+   * @param {string} eventType
+   * @param {EventListener} callback
+   */
   addEvent(selector, eventType, callback) {
     /**
      * event listener를 각각의 하위 요소가 아니라
      * component의 target 자체에 등록
      * 따라서 매번 추가로 등록할 필요가 없어짐.
      */
-
-    // const children = this.$target.querySelectorAll(selector);
-    // const isTarget = (target) => children.includes(target) || target.closest(selector)
 
     this.$target.addEventListener(eventType, (event) => {
       // event 대상이 selector인 경우, callback 실행
@@ -36,10 +46,6 @@ export default class Component {
   render() {
     this.$target.innerHTML = this.template();
     this.mounted();
-  }
-
-  template() {
-    return ``;
   }
 
   mounted() {}
