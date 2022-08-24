@@ -11,12 +11,8 @@ export default class Nodes extends Component {
      * @type {{ nodes: Node[] }}
      */
     this.$state = {
-      nodes: nodeSample,
+      nodes: this.$props.nodes,
     };
-    // getNodes(nodeId).then((data) => {
-    //   this.setState({ nodeList: data });
-    //   console.log(this.$state.nodeList);
-    // });
   }
 
   template() {
@@ -25,14 +21,18 @@ export default class Nodes extends Component {
 
       return `
         <div class="Nodes">
-          <div class="Node">
-            <img src="./assets/prev.png">
-          </div>
+          ${
+            this.$props.nodeId
+              ? `<div class="Node">
+              <img src="./assets/prev.png">
+            </div>`
+              : ``
+          }
 
           ${nodes
             .map(
               ({ id, name, type, filePath, parent }) =>
-                `<div class="Node">
+                `<div class="Node" data-id="${id}">
                   <img src=${this.getNodeIcon(type)}>
                   <div>${name}</div>
                 </div>`
@@ -45,7 +45,13 @@ export default class Nodes extends Component {
     }
   }
 
-  setEvent() {}
+  setEvent() {
+    this.addEvent(".Node", "click", (event) => {
+      // console.log(event);
+      // console.log(event.target.parentElement.dataset.id);
+      this.$props.setNodes(event.target.parentElement.dataset.id);
+    });
+  }
 
   getNodeIcon(type) {
     return type === "DIRECTORY"

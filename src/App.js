@@ -10,16 +10,19 @@ import { getNodes } from "./api/app.js";
 
 export default class App extends Component {
   setup() {
+    console.log("App setup");
     /**
      * @type {{
-     *  parentNodeId: string,
+     *  nodeId: string,
      *  nodes: Node[]
      * }}
      */
     this.$state = {
-      parentNodeId: "",
+      nodeId: "",
       nodes: [],
     };
+
+    this.setNodes(this.$state.nodeId);
   }
 
   template() {
@@ -34,6 +37,21 @@ export default class App extends Component {
 
   mounted() {
     const $nodes = this.getComponentTag("Nodes");
-    new Nodes($nodes, {});
+    new Nodes($nodes, {
+      nodeId: this.$state.nodeId,
+      nodes: this.$state.nodes,
+      setNodes: this.setNodes.bind(this),
+    });
+  }
+
+  setNodes(nodeId) {
+    (async () => {
+      const nodes = await getNodes(nodeId);
+      console.log(nodes);
+      this.setState({
+        nodeId,
+        nodes: nodes,
+      });
+    })();
   }
 }
