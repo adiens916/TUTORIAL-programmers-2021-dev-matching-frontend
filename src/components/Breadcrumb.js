@@ -5,7 +5,13 @@ export default class Breadcrumb extends Component {
     return `
       <nav class="Breadcrumb">
         <div>root</div>
-        <div>하얀고양이</div>
+        ${this.$props.depth
+          .map(
+            (node) => `
+        <div>${node.name}</div>
+        `
+          )
+          .join("")}
       </nav>
     `;
   }

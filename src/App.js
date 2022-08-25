@@ -42,6 +42,11 @@ export default class App extends Component {
   }
 
   mountComponent() {
+    const $breadcrumb = this.getComponentTag("Breadcrumb");
+    new Breadcrumb($breadcrumb, {
+      depth: this.$state.depth.slice(1),
+    });
+
     const $nodes = this.getComponentTag("Nodes");
     new Nodes($nodes, {
       currentNodeId: this.$state.currentNodeId,
@@ -106,9 +111,8 @@ export default class App extends Component {
   }
 
   async onPrevButton() {
-    const { depth } = this.$state;
-    depth.pop();
-    const parentNode = depth.pop();
+    this.$state.depth.pop();
+    const parentNode = this.$state.depth.pop();
 
     try {
       await this.setNodesWithLoading(parentNode);
