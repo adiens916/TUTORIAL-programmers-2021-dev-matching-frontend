@@ -2,6 +2,7 @@ import Component from "./core/Component.js";
 import Breadcrumb from "./components/Breadcrumb.js";
 import Nodes from "./components/Nodes.js";
 import ImageView from "./components/ImageView.js";
+import Loading from "./components/Loading.js";
 import { getNodes } from "./api/app.js";
 
 /**
@@ -17,6 +18,7 @@ export default class App extends Component {
      *  childNodes: Node[],
      *  depth: string[],
      *  selectedFilePath: string,
+     *  isLoading: boolean,
      * }}
      */
     this.$state = {
@@ -24,6 +26,7 @@ export default class App extends Component {
       childNodes: [],
       depth: [],
       selectedFilePath: "",
+      isLoading: false,
     };
   }
 
@@ -33,6 +36,7 @@ export default class App extends Component {
         <div data-component="Breadcrumb"></div>
         <div data-component="Nodes"></div>
         <div data-component="ImageView"></div>
+        <div data-component="Loading"></div>
       </main>
     `;
   }
@@ -51,10 +55,21 @@ export default class App extends Component {
       selectedFilePath: this.$state.selectedFilePath,
       closeImage: this.closeImage.bind(this),
     });
+
+    const $loading = this.getComponentTag("Loading");
+    new Loading($loading, {
+      isLoading: this.$state.isLoading,
+    });
   }
 
   loadData() {
-    this.setNodes("");
+    this.setNodesWithLoading("");
+  }
+
+  async setNodesWithLoading(currentNodeId) {
+    this.setState({ isLoading: true });
+    await this.setNodes(currentNodeId);
+    this.setState({ isLoading: false });
   }
 
   async setNodes(currentNodeId) {
@@ -77,7 +92,7 @@ export default class App extends Component {
   async onClick(node) {
     try {
       if (node.type == "DIRECTORY") {
-        await this.setNodes(node.id);
+        await this.setNodesWithLoading(node.id);
       } else if (node.type == "FILE") {
         this.setState({
           selectedFilePath: node.filePath,
@@ -94,7 +109,7 @@ export default class App extends Component {
     const parentNodeId = depth.pop();
 
     try {
-      await this.setNodes(parentNodeId);
+      await this.setNodesWithLoading(parentNodeId);
     } catch (error) {
       console.log(error);
     }
