@@ -9,6 +9,8 @@ import { getNodes } from "./api/app.js";
  * @typedef {import("./types.js").Node} Node
  */
 
+const cache = {};
+
 export default class App extends Component {
   initState() {
     console.log("App setup");
@@ -81,9 +83,7 @@ export default class App extends Component {
     const rootNodeId = rootNode ? rootNode.id : "";
 
     try {
-      const childNodes = await getNodes(rootNodeId);
-      console.log(childNodes);
-
+      const childNodes = await this.getAndSaveChildNodes(rootNodeId);
       this.setState({
         currentNodeId: rootNodeId,
         childNodes,
@@ -92,6 +92,17 @@ export default class App extends Component {
       });
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async getAndSaveChildNodes(rootNodeId) {
+    if (cache[rootNodeId]) {
+      return cache[rootNodeId];
+    } else {
+      const childNodes = await getNodes(rootNodeId);
+      cache[rootNodeId] = childNodes;
+      // console.log(childNodes);
+      return childNodes;
     }
   }
 
