@@ -15,13 +15,15 @@ export default class App extends Component {
      * @type {{
      *  currentNodeId: string,
      *  childNodes: Node[],
-     *  depth: string[]
+     *  depth: string[],
+     *  selectedFilePath: string,
      * }}
      */
     this.$state = {
       currentNodeId: "",
       childNodes: [],
       depth: [],
+      selectedFilePath: "",
     };
   }
 
@@ -43,6 +45,12 @@ export default class App extends Component {
       onClick: this.onClick.bind(this),
       onPrevButton: this.onPrevButton.bind(this),
     });
+
+    const $imageView = this.getComponentTag("ImageView");
+    new ImageView($imageView, {
+      selectedFilePath: this.$state.selectedFilePath,
+      closeImage: this.closeImage.bind(this),
+    });
   }
 
   loadData() {
@@ -58,6 +66,7 @@ export default class App extends Component {
         currentNodeId,
         childNodes,
         depth: [...this.$state.depth, currentNodeId],
+        selectedFilePath: "",
       });
     } catch (error) {
       console.log(error);
@@ -70,6 +79,9 @@ export default class App extends Component {
       if (node.type == "DIRECTORY") {
         await this.setNodes(node.id);
       } else if (node.type == "FILE") {
+        this.setState({
+          selectedFilePath: node.filePath,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -86,5 +98,11 @@ export default class App extends Component {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  closeImage() {
+    this.setState({
+      selectedFilePath: "",
+    });
   }
 }
