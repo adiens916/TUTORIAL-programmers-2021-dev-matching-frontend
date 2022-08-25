@@ -10,15 +10,29 @@ export default class Component {
   constructor($target, $props) {
     this.$target = $target;
     this.$props = $props;
-    this.setup();
-    this.setEvent();
+    this.initState();
     this.render();
+    this.setEvent();
+    this.loadData();
   }
 
-  setup() {}
+  initState() {}
 
   template() {
     return ``;
+  }
+
+  render() {
+    this.$target.innerHTML = this.template();
+    // render는 현재 컴포넌트만 갱신하기 때문에
+    // 하위 컴포넌트들도 불러와서 렌더링해야 함.
+    this.mountComponent();
+  }
+
+  mountComponent() {}
+
+  getComponentTag(selector) {
+    return this.$target.querySelector(`[data-component="${selector}"]`);
   }
 
   setEvent() {}
@@ -44,16 +58,7 @@ export default class Component {
     });
   }
 
-  render() {
-    this.$target.innerHTML = this.template();
-    this.mounted();
-  }
-
-  mounted() {}
-
-  getComponentTag(selector) {
-    return this.$target.querySelector(`[data-component="${selector}"]`);
-  }
+  loadData() {}
 
   setState(newState) {
     this.$state = { ...this.$state, ...newState };

@@ -6,7 +6,7 @@ import nodeSample from "../api/getNodesSample.json" assert { type: "json" };
  * @typedef { import('../types').Node } Node
  */
 export default class Nodes extends Component {
-  setup() {
+  initState() {
     /**
      * @type {{ nodes: Node[] }}
      */

@@ -9,7 +9,7 @@ import { getNodes } from "./api/app.js";
  */
 
 export default class App extends Component {
-  setup() {
+  initState() {
     console.log("App setup");
     /**
      * @type {{
@@ -21,8 +21,6 @@ export default class App extends Component {
       nodeId: "",
       nodes: [],
     };
-
-    this.setNodes(this.$state.nodeId);
   }
 
   template() {
@@ -35,7 +33,7 @@ export default class App extends Component {
     `;
   }
 
-  mounted() {
+  mountComponent() {
     const $nodes = this.getComponentTag("Nodes");
     new Nodes($nodes, {
       nodeId: this.$state.nodeId,
@@ -44,14 +42,16 @@ export default class App extends Component {
     });
   }
 
-  setNodes(nodeId) {
-    (async () => {
-      const nodes = await getNodes(nodeId);
-      console.log(nodes);
-      this.setState({
-        nodeId,
-        nodes: nodes,
-      });
-    })();
+  loadData() {
+    this.setNodes(this.$state.nodeId);
+  }
+
+  async setNodes(nodeId) {
+    const nodes = await getNodes(nodeId);
+    console.log(nodes);
+    this.setState({
+      nodeId,
+      nodes: nodes,
+    });
   }
 }
