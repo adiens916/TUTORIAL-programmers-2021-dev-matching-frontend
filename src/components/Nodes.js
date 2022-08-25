@@ -46,10 +46,8 @@ export default class Nodes extends Component {
   }
 
   setEvent() {
-    this.addEvent(".Node", "click", (event) => {
-      // console.log(event);
-      // console.log(event.target.parentElement.dataset.id);
-      this.$props.setNodes(event.target.parentElement.dataset.id);
+    this.addEvent(".Node", "click", (target) => {
+      this.$props.setNodes(target.dataset.id);
     });
   }
 

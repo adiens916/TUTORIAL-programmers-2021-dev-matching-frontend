@@ -36,9 +36,10 @@ export default class Component {
      */
 
     this.$target.addEventListener(eventType, (event) => {
-      // event 대상이 selector인 경우, callback 실행
-      if (event.target.closest(selector)) {
-        callback(event);
+      // 해당 selector를 찾고, 못 찾으면 null을 반환
+      const target = event.target.closest(selector);
+      if (target) {
+        callback(target);
       }
     });
   }
