@@ -47,6 +47,7 @@ export default class App extends Component {
     const $breadcrumb = this.getComponentTag("Breadcrumb");
     new Breadcrumb($breadcrumb, {
       depth: this.$state.depth.slice(1),
+      goDepth: this.goDepth.bind(this),
     });
 
     const $nodes = this.getComponentTag("Nodes");
@@ -130,6 +131,23 @@ export default class App extends Component {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async goDepth(index) {
+    // console.log(index);
+    if (index === this.$state.depth.length - 1) {
+      return;
+    }
+
+    const { depth } = this.$state;
+    const currentNodeId = depth[index] ? depth[index].id : "";
+    // console.log(depth);
+
+    this.setState({
+      currentNodeId,
+      childNodes: cache[currentNodeId],
+      depth: depth.slice(0, index + 1),
+    });
   }
 
   closeImage() {
