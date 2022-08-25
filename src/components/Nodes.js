@@ -6,35 +6,26 @@ import nodeSample from "../api/getNodesSample.json" assert { type: "json" };
  * @typedef { import('../types').Node } Node
  */
 export default class Nodes extends Component {
-  initState() {
-    /**
-     * @type {{ nodes: Node[] }}
-     */
-    this.$state = {
-      nodes: this.$props.nodes,
-    };
-  }
-
   template() {
-    if (this.$state.nodes) {
-      const nodes = this.$state.nodes;
+    if (this.$props.childNodes) {
+      const { childNodes } = this.$props;
 
       return `
         <div class="Nodes">
           ${
-            this.$props.nodeId
-              ? `<div class="Node">
+            this.$props.currentNodeId
+              ? `<div class="PrevButton">
               <img src="./assets/prev.png">
             </div>`
               : ``
           }
 
-          ${nodes
+          ${childNodes
             .map(
-              ({ id, name, type, filePath, parent }) =>
-                `<div class="Node" data-id="${id}">
-                  <img src=${this.getNodeIcon(type)}>
-                  <div>${name}</div>
+              (node) =>
+                `<div class="Node" data-id="${node.id}">
+                  <img src=${this.getNodeIcon(node.type)}>
+                  <div>${node.name}</div>
                 </div>`
             )
             // join이 없으면 각각 , 로 연결된다.
@@ -45,15 +36,21 @@ export default class Nodes extends Component {
     }
   }
 
-  setEvent() {
-    this.addEvent(".Node", "click", (target) => {
-      this.$props.setNodes(target.dataset.id);
-    });
-  }
-
   getNodeIcon(type) {
     return type === "DIRECTORY"
       ? "./assets/directory.png"
       : "./assets/file.png";
+  }
+
+  setEvent() {
+    this.addEvent(".Node", "click", (target) => {
+      const { id } = target.dataset;
+      const node = this.$props.childNodes.find((node) => node.id == id);
+      this.$props.onClick(node);
+    });
+
+    this.addEvent(".PrevButton", "click", () => {
+      this.$props.onPrevButton();
+    });
   }
 }

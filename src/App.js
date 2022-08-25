@@ -13,13 +13,15 @@ export default class App extends Component {
     console.log("App setup");
     /**
      * @type {{
-     *  nodeId: string,
-     *  nodes: Node[]
+     *  currentNodeId: string,
+     *  childNodes: Node[],
+     *  depth: string[]
      * }}
      */
     this.$state = {
-      nodeId: "",
-      nodes: [],
+      currentNodeId: "",
+      childNodes: [],
+      depth: [],
     };
   }
 
@@ -36,22 +38,53 @@ export default class App extends Component {
   mountComponent() {
     const $nodes = this.getComponentTag("Nodes");
     new Nodes($nodes, {
-      nodeId: this.$state.nodeId,
-      nodes: this.$state.nodes,
-      setNodes: this.setNodes.bind(this),
+      currentNodeId: this.$state.currentNodeId,
+      childNodes: this.$state.childNodes,
+      onClick: this.onClick.bind(this),
+      onPrevButton: this.onPrevButton.bind(this),
     });
   }
 
   loadData() {
-    this.setNodes(this.$state.nodeId);
+    this.setNodes("");
   }
 
-  async setNodes(nodeId) {
-    const nodes = await getNodes(nodeId);
-    console.log(nodes);
-    this.setState({
-      nodeId,
-      nodes: nodes,
-    });
+  async setNodes(currentNodeId) {
+    try {
+      const childNodes = await getNodes(currentNodeId);
+      console.log(childNodes);
+
+      this.setState({
+        currentNodeId,
+        childNodes,
+        depth: [...this.$state.depth, currentNodeId],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /** @param {Node} node */
+  async onClick(node) {
+    try {
+      if (node.type == "DIRECTORY") {
+        await this.setNodes(node.id);
+      } else if (node.type == "FILE") {
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async onPrevButton() {
+    const { depth } = this.$state;
+    depth.pop();
+    const parentNodeId = depth.pop();
+
+    try {
+      await this.setNodes(parentNodeId);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
