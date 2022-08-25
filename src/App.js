@@ -63,24 +63,26 @@ export default class App extends Component {
   }
 
   loadData() {
-    this.setNodesWithLoading("");
+    this.setNodesWithLoading(null);
   }
 
-  async setNodesWithLoading(currentNodeId) {
+  async setNodesWithLoading(rootNode) {
     this.setState({ isLoading: true });
-    await this.setNodes(currentNodeId);
+    await this.setNodes(rootNode);
     this.setState({ isLoading: false });
   }
 
-  async setNodes(currentNodeId) {
+  async setNodes(rootNode) {
+    const rootNodeId = rootNode ? rootNode.id : "";
+
     try {
-      const childNodes = await getNodes(currentNodeId);
+      const childNodes = await getNodes(rootNodeId);
       console.log(childNodes);
 
       this.setState({
-        currentNodeId,
+        currentNodeId: rootNodeId,
         childNodes,
-        depth: [...this.$state.depth, currentNodeId],
+        depth: [...this.$state.depth, rootNode],
         selectedFilePath: "",
       });
     } catch (error) {
@@ -92,7 +94,7 @@ export default class App extends Component {
   async onClick(node) {
     try {
       if (node.type == "DIRECTORY") {
-        await this.setNodesWithLoading(node.id);
+        await this.setNodesWithLoading(node);
       } else if (node.type == "FILE") {
         this.setState({
           selectedFilePath: node.filePath,
@@ -106,10 +108,10 @@ export default class App extends Component {
   async onPrevButton() {
     const { depth } = this.$state;
     depth.pop();
-    const parentNodeId = depth.pop();
+    const parentNode = depth.pop();
 
     try {
-      await this.setNodesWithLoading(parentNodeId);
+      await this.setNodesWithLoading(parentNode);
     } catch (error) {
       console.log(error);
     }
